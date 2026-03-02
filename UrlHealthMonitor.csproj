@@ -6,6 +6,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <!-- 🚀 IMPORTANT: Exclude test project folder from main build -->
+  <ItemGroup>
+    <Compile Remove="UrlHealthMonitor.Tests/**/*.cs" />
+    <None Include="UrlHealthMonitor.Tests/**/*" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="itext7" Version="9.4.0" />
@@ -19,4 +25,3 @@
   </ItemGroup>
 
 </Project>
-
