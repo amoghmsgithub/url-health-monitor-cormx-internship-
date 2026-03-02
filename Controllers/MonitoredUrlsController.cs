@@ -1,108 +1,198 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using UrlHealthMonitor.Data;
 using UrlHealthMonitor.Models;
+using UrlHealthMonitor.Services;
 
 namespace UrlHealthMonitor.Controllers
 {
+    // 🔒 ADMIN ONLY ACCESS
+    [Authorize(Roles = "Admin")]
     public class MonitoredUrlsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly RecoveryClientService _recoveryClient;
 
-        public MonitoredUrlsController(AppDbContext context)
+        public MonitoredUrlsController(
+            AppDbContext context,
+            RecoveryClientService recoveryClient)
         {
             _context = context;
+            _recoveryClient = recoveryClient;
         }
 
-        // ===================== INDEX =====================
-        // GET: /MonitoredUrls
-        public IActionResult Index()
+        // =========================
+        // INDEX
+        // =========================
+        public async Task<IActionResult> Index()
         {
-            var urls = _context.MonitoredUrls.ToList();
+            var urls = await _context.MonitoredUrls
+                .Include(u => u.Group)
+                .ToListAsync();
+
             return View(urls);
         }
 
-        // ===================== CREATE =====================
-        // GET: /MonitoredUrls/Create
+        // =========================
+        // DETAILS
+        // =========================
+        public async Task<IActionResult> Details(int id)
+        {
+            var url = await _context.MonitoredUrls
+                .Include(u => u.Group)
+                .Include(u => u.UrlOutages)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (url == null)
+                return NotFound();
+
+            return View(url);
+        }
+
+        // =========================
+        // CREATE (GET)
+        // =========================
         public IActionResult Create()
         {
+            ViewBag.Groups = _context.Groups.ToList();
             return View();
         }
 
-        // POST: /MonitoredUrls/Create
+        // =========================
+        // CREATE (POST)
+        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(MonitoredUrl monitoredUrl)
+        public async Task<IActionResult> Create(MonitoredUrl model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                monitoredUrl.Health = "Unknown";
-                monitoredUrl.LastUpdated = DateTime.UtcNow;
-
-                _context.MonitoredUrls.Add(monitoredUrl);
-                _context.SaveChanges();
-
-                return RedirectToAction(nameof(Index));
+                ViewBag.Groups = _context.Groups.ToList();
+                return View(model);
             }
 
-            return View(monitoredUrl);
+            model.HealthStatus = "Unknown";
+            model.LastUpdated = DateTime.UtcNow;
+
+            _context.MonitoredUrls.Add(model);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // ===================== EDIT =====================
-        // GET: /MonitoredUrls/Edit/5
-        public IActionResult Edit(int id)
+        // =========================
+        // EDIT (GET)
+        // =========================
+        public async Task<IActionResult> Edit(int id)
         {
-            var url = _context.MonitoredUrls.Find(id);
+            var url = await _context.MonitoredUrls.FindAsync(id);
             if (url == null)
-            {
                 return NotFound();
+
+            ViewBag.Groups = _context.Groups.ToList();
+            return View(url);
+        }
+
+        // =========================
+        // EDIT (POST)
+        // =========================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, MonitoredUrl model)
+        {
+            if (id != model.Id)
+                return NotFound();
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Groups = _context.Groups.ToList();
+                return View(model);
             }
+
+            var existing = await _context.MonitoredUrls
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (existing == null)
+                return NotFound();
+
+            // preserve runtime fields
+            model.GroupId = existing.GroupId;
+            model.HealthStatus = existing.HealthStatus;
+            model.DownSince = existing.DownSince;
+            model.LastRecoveryRequestId = existing.LastRecoveryRequestId;
+            model.LastRecoveryStatus = existing.LastRecoveryStatus;
+            model.LastRecoveryAt = existing.LastRecoveryAt;
+
+            model.LastUpdated = DateTime.UtcNow;
+
+            _context.Update(model);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // =========================
+        // DELETE
+        // =========================
+        public async Task<IActionResult> Delete(int id)
+        {
+            var url = await _context.MonitoredUrls
+                .Include(u => u.Group)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (url == null)
+                return NotFound();
 
             return View(url);
         }
 
-        // POST: /MonitoredUrls/Edit
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(MonitoredUrl monitoredUrl)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.MonitoredUrls.Update(monitoredUrl);
-                _context.SaveChanges();
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            return View(monitoredUrl);
-        }
-
-        // ===================== DELETE =====================
-        // GET: /MonitoredUrls/Delete/5
-        public IActionResult Delete(int id)
-        {
-            var url = _context.MonitoredUrls.Find(id);
-            if (url == null)
-            {
-                return NotFound();
-            }
-
-            return View(url);
-        }
-
-        // POST: /MonitoredUrls/Delete
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var url = _context.MonitoredUrls.Find(id);
+            var url = await _context.MonitoredUrls.FindAsync(id);
+
             if (url != null)
             {
                 _context.MonitoredUrls.Remove(url);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // =========================
+        // 🔁 RECOVER (MANUAL)
+        // =========================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Recover(int id)
+        {
+            var endpoint = await _context.MonitoredUrls.FindAsync(id);
+            if (endpoint == null)
+                return NotFound();
+
+            var ack = await _recoveryClient.TriggerRecoveryAsync(endpoint);
+
+            if (ack != null && ack.Ack)
+            {
+                endpoint.LastRecoveryRequestId = ack.RequestId;
+                endpoint.LastRecoveryStatus = "Pending";
+                endpoint.LastRecoveryAt = DateTime.UtcNow;
+
+                _context.Update(endpoint);
+                await _context.SaveChangesAsync();
+
+                TempData["Message"] = "Recovery request acknowledged";
+            }
+            else
+            {
+                TempData["Error"] = "Recovery request failed";
             }
 
             return RedirectToAction(nameof(Index));
         }
     }
 }
-

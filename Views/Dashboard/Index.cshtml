@@ -1,0 +1,164 @@
+@using System.Text.Json
+
+@{
+    ViewData["Title"] = "Dashboard";
+
+    int total = ViewBag.Total ?? 0;
+    int up = ViewBag.Up ?? 0;
+    int down = ViewBag.Down ?? 0;
+
+    var pieData = new[] { up, down };
+    var barData = new[] { total, up, down };
+
+    // 🔹 TEMP per-URL timeline data (UI ONLY)
+    var timeLabels = new[] { "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00" };
+
+    var timelineSeries = new[]
+    {
+        new { label = "google", data = new[] {1.2, 1.3, 1.1, 1.2, 1.3, 1.2, 1.3}, color = "#2563eb" },
+        new { label = "test",   data = new[] {1.0, 1.1, 1.0, 1.1, 1.0, 1.1, 1.0}, color = "#16a34a" },
+        new { label = "gpt",    data = new[] {2.0, 2.2, 2.5, 2.1, 2.3, 2.4, 2.2}, color = "#dc2626" }
+    };
+}
+
+<div class="container dashboard-page">
+
+    <!-- HEADER -->
+    <div class="mb-4">
+        <h2 class="dashboard-title">Account Overview</h2>
+        <p class="text-muted">System health summary (last check)</p>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="stat-card stat-total">
+                <div class="stat-label">Total URLs</div>
+                <div class="stat-value">@total</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card stat-up">
+                <div class="stat-label">UP</div>
+                <div class="stat-value">@up</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card stat-down">
+                <div class="stat-label">DOWN</div>
+                <div class="stat-value">@down</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACTIVE INCIDENT -->
+    @if (down > 0)
+    {
+        <div class="alert alert-danger mb-4">
+            <strong>⚠ Active Incident Detected</strong><br />
+            One or more monitored URLs are currently DOWN.
+        </div>
+    }
+
+    <!-- CHARTS ROW -->
+    <div class="row g-4">
+
+        <!-- LEFT -->
+        <div class="col-md-6">
+            <div class="chart-card">
+                <div class="chart-title">Status Distribution</div>
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="col-md-6">
+
+            <!-- OVERVIEW -->
+            <div class="chart-card mb-3">
+                <div class="chart-title">Overview</div>
+                <canvas id="barChart"></canvas>
+            </div>
+
+            <!-- 🔥 MINI TIMELINE (FIXED SIZE) -->
+            <div class="chart-card">
+                <div class="chart-title">Response Time (per URL)</div>
+                <div style="height:180px;">
+                    <canvas id="timelineChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // PIE
+    new Chart(document.getElementById('pieChart'), {
+        type: 'pie',
+        data: {
+            labels: ['UP', 'DOWN'],
+            datasets: [{
+                data: @Html.Raw(JsonSerializer.Serialize(pieData)),
+                backgroundColor: ['#16a34a', '#dc2626']
+            }]
+        },
+        options: {
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+
+    // BAR
+    new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Total', 'UP', 'DOWN'],
+            datasets: [{
+                data: @Html.Raw(JsonSerializer.Serialize(barData)),
+                backgroundColor: ['#2563eb', '#16a34a', '#dc2626']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    // 🔥 MINI MULTI-LINE TIMELINE
+    new Chart(document.getElementById('timelineChart'), {
+        type: 'line',
+        data: {
+            labels: @Html.Raw(JsonSerializer.Serialize(timeLabels)),
+            datasets: @Html.Raw(JsonSerializer.Serialize(
+                timelineSeries.Select(s => new {
+                    label = s.label,
+                    data = s.data,
+                    borderColor = s.color,
+                    tension = 0.4,
+                    fill = false
+                })
+            ))
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' }
+            },
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Seconds'
+                    }
+                }
+            }
+        }
+    });
+</script>
+}

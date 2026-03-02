@@ -1,28 +1,108 @@
 @model UrlHealthMonitor.Models.MonitoredUrl
 
-<h2>Add URL</h2>
+@{
+    ViewData["Title"] = "Add URL";
+    var groups = ViewBag.Groups as List<UrlHealthMonitor.Models.Group> ?? new();
+}
 
-<form asp-action="Create" method="post">
-    <div>
-        <label>Name</label>
-        <input asp-for="Name" />
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+
+                <h3 class="mb-3 fw-semibold">Add URL</h3>
+                <p class="text-muted mb-4">
+                    Add a new URL to be monitored by CORMX.
+                </p>
+
+                <!-- 🔴 SHOW ALL ERRORS -->
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- NAME -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Name</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <!-- URL -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">URL</label>
+                        <input asp-for="Url" class="form-control" />
+                        <span asp-validation-for="Url" class="text-danger"></span>
+                    </div>
+
+                    <!-- GROUP -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Group</label>
+                        <select asp-for="GroupId" class="form-select">
+                            <option value="0">-- Select Group --</option>
+                            @foreach (var g in groups)
+                            {
+                                <option value="@g.Id">@g.Name</option>
+                            }
+                        </select>
+                        <span asp-validation-for="GroupId" class="text-danger"></span>
+                    </div>
+
+                    <!-- INTERVAL -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Check Interval</label>
+                        <select asp-for="IntervalSeconds" class="form-select">
+                            <option value="30">30 seconds</option>
+                            <option value="60">1 minute</option>
+                            <option value="300">5 minutes</option>
+                            <option value="600">10 minutes</option>
+                        </select>
+                    </div>
+
+                    <!-- ========================= -->
+                    <!-- 🔁 RECOVERY CONFIG (NEW) -->
+                    <!-- ========================= -->
+
+                    <!-- APP POOL NAME -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">App Pool Name</label>
+                        <input asp-for="AppPoolName" class="form-control"
+                               placeholder="e.g. practice03" />
+                    </div>
+
+                    <!-- RECOVERY WEBSITE URL -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Recovery Website URL</label>
+                        <input asp-for="RecoveryWebsiteUrl" class="form-control"
+                               placeholder="https://recovery-server/api/recover" />
+                    </div>
+
+                    <!-- RECOVERY ACTION -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Recovery Action</label>
+                        <select asp-for="RecoveryAction" class="form-select">
+                            <option value="">-- Select Action --</option>
+                            <option value="1">Restart App Pool</option>
+                            <option value="2">Restart Website</option>
+                            <option value="3">Full Recovery</option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            Save URL
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
     </div>
+</div>
 
-    <div>
-        <label>URL</label>
-        <input asp-for="Url" />
-    </div>
-
-    <div>
-        <label>Interval</label>
-        <select asp-for="IntervalSeconds">
-            <option value="30">30 seconds</option>
-            <option value="40">40 seconds</option>
-            <option value="50">50 seconds</option>
-        </select>
-    </div>
-
-    <br />
-
-    <button type="submit">Save</button>
-</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

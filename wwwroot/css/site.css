@@ -1,22 +1,423 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
+/* =========================================
+   GLOBAL THEME – CORMX
+   ========================================= */
 
 body {
-  margin-bottom: 60px;
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar {
+    background: white !important;
+    border-bottom: 1px solid #c7d2fe;
+}
+
+.navbar-brand {
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    color: #312e81 !important;
+}
+
+/* ================= HERO (HOME) ================= */
+
+.cormx-hero {
+    background: linear-gradient(
+        135deg,
+        #e0e7ff 0%,
+        #ecfeff 45%,
+        #f5f3ff 100%
+    );
+    padding: 100px 20px;
+    border-radius: 26px;
+    margin-top: 24px;
+}
+
+.cormx-title {
+    font-weight: 900;
+    font-size: 3.6rem;
+    letter-spacing: -1.3px;
+    color: #312e81;
+}
+
+.cormx-subtitle {
+    color: #475569;
+    max-width: 920px;
+    margin: auto;
+    font-size: 1.15rem;
+}
+
+/* ================= FEATURE CARDS (HOME) ================= */
+
+.cormx-card {
+    background: linear-gradient(180deg, #ffffff, #eef2ff);
+    border: 1px solid #a5b4fc;
+    border-radius: 22px;
+    padding: 40px 28px;
+    transition: all 0.4s ease;
+    height: 100%;
+}
+
+.cormx-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 35px 70px rgba(67, 56, 202, 0.25);
+}
+
+.cormx-card h5 {
+    font-weight: 800;
+    color: #1e1b4b;
+    margin-bottom: 14px;
+}
+
+.cormx-card p {
+    color: #475569;
+    font-size: 0.96rem;
+}
+
+/* ================= BUTTONS ================= */
+
+.btn-cormx-primary {
+    background: linear-gradient(135deg, #4338ca, #6366f1);
+    color: white;
+    border-radius: 18px;
+    padding: 14px 36px;
+    border: none;
+    font-weight: 700;
+}
+
+.btn-cormx-outline {
+    background: white;
+    border-radius: 18px;
+    padding: 14px 36px;
+    border: 2px solid #6366f1;
+    color: #312e81;
+    font-weight: 700;
+}
+
+.btn-cormx-outline:hover {
+    background: #eef2ff;
+}
+
+/* ================= FOOTER ================= */
+
+.cormx-footer {
+    color: #475569;
+    font-size: 14px;
+    margin-bottom: 40px;
+}
+
+/* =========================================
+   USER MANUAL – SCOPED
+   ========================================= */
+
+.user-manual-wrapper {
+    background: linear-gradient(135deg, #eef2ff, #ecfeff);
+    padding: 50px 30px;
+    border-radius: 22px;
+    margin-top: 30px;
+}
+
+.user-manual-title {
+    font-size: 2.4rem;
+    font-weight: 900;
+    color: #312e81;
+    margin-bottom: 10px;
+}
+
+.user-manual-subtitle {
+    color: #475569;
+    margin-bottom: 35px;
+}
+
+.manual-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid #c7d2fe;
+    box-shadow: 0 18px 40px rgba(67, 56, 202, 0.12);
+    margin-bottom: 30px;
+}
+
+.manual-card h4 {
+    font-weight: 800;
+    color: #1e1b4b;
+    margin-bottom: 15px;
+}
+
+.manual-card ul {
+    padding-left: 18px;
+}
+
+.manual-card li {
+    margin-bottom: 10px;
+    color: #475569;
+    font-size: 0.95rem;
+}
+
+.status-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: white;
+}
+
+.status-up {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+}
+
+.status-down {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+}
+
+/* =========================================
+   DASHBOARD – FULLY SCOPED
+   ========================================= */
+
+.dashboard-page .dashboard-title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #1e1b4b;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Stat Cards */
+.dashboard-page .stat-card {
+    border-radius: 22px;
+    padding: 28px;
+    color: white;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+}
+
+.dashboard-page .stat-card h6 {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.dashboard-page .stat-card h2 {
+    font-size: 2.6rem;
+    font-weight: 900;
+    margin: 0;
+}
+
+.dashboard-page .stat-total {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+}
+
+.dashboard-page .stat-up {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+}
+
+.dashboard-page .stat-down {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+}
+
+/* Chart Cards */
+.dashboard-page .chart-card {
+    background: white;
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: 0 25px 50px rgba(67,56,202,0.15);
+}
+
+.dashboard-page .chart-title {
+    font-weight: 800;
+    color: #1e1b4b;
+    margin-bottom: 15px;
+}
+
+/* Recent Outages Table */
+.dashboard-page .table-card {
+    background: white;
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: 0 25px 50px rgba(67,56,202,0.15);
+}
+
+.dashboard-page .table-card h5 {
+    font-weight: 800;
+    color: #1e1b4b;
+    margin-bottom: 20px;
+}
+
+.dashboard-page .badge-up {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.dashboard-page .badge-down {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+/* =========================
+   DARK MODE – CORMX THEME
+   ========================= */
+
+:root[data-theme="dark"] {
+    --bg-main: #0b1220;
+    --bg-secondary: #0f172a;
+    --bg-card: #111827;
+    --border-soft: #1f2937;
+
+    --text-primary: #e5e7eb;
+    --text-secondary: #9ca3af;
+
+    --accent: #6366f1;   /* CORMX indigo */
+    --accent-soft: #818cf8;
+}
+
+/* BODY */
+:root[data-theme="dark"] body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+}
+
+/* NAVBAR */
+:root[data-theme="dark"] .navbar {
+    background-color: var(--bg-secondary) !important;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+:root[data-theme="dark"] .navbar-brand,
+:root[data-theme="dark"] .nav-link {
+    color: var(--text-primary) !important;
+}
+
+:root[data-theme="dark"] .nav-link:hover {
+    color: var(--accent-soft) !important;
+}
+
+/* DROPDOWNS */
+:root[data-theme="dark"] .dropdown-menu {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-soft);
+}
+
+:root[data-theme="dark"] .dropdown-item,
+:root[data-theme="dark"] .dropdown-item-text {
+    color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .dropdown-item:hover {
+    background-color: var(--bg-secondary);
+}
+
+/* CARDS */
+:root[data-theme="dark"] .card {
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-soft);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* BUTTONS */
+:root[data-theme="dark"] .btn-outline-secondary {
+    color: var(--text-primary);
+    border-color: var(--border-soft);
+}
+
+:root[data-theme="dark"] .btn-outline-secondary:hover {
+    background-color: var(--bg-secondary);
+}
+
+:root[data-theme="dark"] .btn-outline-primary {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+:root[data-theme="dark"] .btn-outline-primary:hover {
+    background-color: var(--accent);
+    color: white;
+}
+
+/* PRIMARY BUTTON (Dashboard etc.) */
+:root[data-theme="dark"] .btn-primary {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    border: none;
+}
+
+/* INPUTS */
+:root[data-theme="dark"] .form-control {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-soft);
+}
+
+:root[data-theme="dark"] .form-control::placeholder {
+    color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .form-control:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(99,102,241,0.25);
+}
+
+/* HERO / SECTIONS */
+:root[data-theme="dark"] .hero,
+:root[data-theme="dark"] .bg-light {
+    background-color: var(--bg-secondary) !important;
+}
+
+/* FOOTER */
+:root[data-theme="dark"] footer {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-soft);
+}
+
+/* LINKS */
+:root[data-theme="dark"] a {
+    color: var(--accent-soft);
+}
+
+:root[data-theme="dark"] a:hover {
+    color: var(--accent);
+}
+.stat-card {
+    border-radius: 18px;
+    padding: 24px;
+    color: #ffffff;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.stat-label {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.stat-total {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+}
+
+.stat-up {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+}
+
+.stat-down {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+}
+
+/* 🔥 FIXED AVAILABILITY CARD */
+.stat-availability {
+    background: #f1f5f9;
+    color: #0f172a;   /* DARK TEXT – FIXES EMPTY LOOK */
 }

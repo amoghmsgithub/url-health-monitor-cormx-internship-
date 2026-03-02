@@ -1,0 +1,61 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container">
+
+    <!-- TITLE -->
+    <div class="dashboard-title mb-4">
+         Dashboard
+    </div>
+
+    <!-- STATS -->
+    <div class="row g-4 mb-5">
+
+        <div class="col-md-4">
+            <div class="stat-card stat-total">
+                <h6>Total URLs</h6>
+                <h2>@ViewBag.TotalUrls</h2>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stat-card stat-up">
+                <h6>UP</h6>
+                <h2>@ViewBag.UpCount</h2>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stat-card stat-down">
+                <h6>DOWN</h6>
+                <h2>@ViewBag.DownCount</h2>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CHARTS -->
+    <div class="row g-4">
+
+        <div class="col-md-6">
+            <div class="chart-card">
+                <div class="chart-title">Status Distribution</div>
+                <canvas id="statusPieChart"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="chart-card">
+                <div class="chart-title">Overview</div>
+                <canvas id="overviewBarChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <!-- KEEP YOUR EXISTING CHART JS HERE -->
+}

@@ -1,0 +1,57 @@
+@model UrlHealthMonitor.Models.MonitoredUrl
+
+@{
+    ViewData["Title"] = "URL Details";
+}
+
+<h2 class="mb-4">URL Details</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <dl class="row">
+
+            <dt class="col-sm-3">Name</dt>
+            <dd class="col-sm-9">@Model.Name</dd>
+
+            <dt class="col-sm-3">URL</dt>
+            <dd class="col-sm-9">
+                <a href="@Model.Url" target="_blank">@Model.Url</a>
+            </dd>
+
+            <dt class="col-sm-3">Group</dt>
+            <dd class="col-sm-9">@Model.Group?.Name</dd>
+
+            <dt class="col-sm-3">Health Status</dt>
+            <dd class="col-sm-9">
+                @if (Model.HealthStatus == "Healthy")
+                {
+                    <span class="badge bg-success">Healthy</span>
+                }
+                else if (Model.HealthStatus == "Down")
+                {
+                    <span class="badge bg-danger">Down</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">Unknown</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Last Checked</dt>
+            <dd class="col-sm-9">
+                @Model.LastCheckTime?.ToString("dd MMM yyyy, HH:mm:ss") ?? "-"
+            </dd>
+
+            <dt class="col-sm-3">Down Since</dt>
+            <dd class="col-sm-9">
+                @Model.DownSince?.ToString("dd MMM yyyy, HH:mm:ss") ?? "-"
+            </dd>
+
+        </dl>
+
+        <a asp-action="Index" class="btn btn-secondary">
+            Back
+        </a>
+    </div>
+</div>

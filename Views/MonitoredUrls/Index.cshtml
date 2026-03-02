@@ -4,92 +4,158 @@
     ViewData["Title"] = "Monitored URLs";
 }
 
-<h2>Monitored URLs</h2>
+<h2 class="mb-3">Monitored URLs</h2>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">
+        + Create New
+    </a>
 </p>
 
-<table class="table table-bordered table-striped">
-    <thead>
+<table class="table table-bordered table-striped align-middle">
+    <thead class="table-light">
         <tr>
             <th>Name</th>
-            <th>URL</th>
             <th>Interval</th>
             <th>Health</th>
             <th>Down Duration</th>
             <th>Last Updated</th>
-            <th>Actions</th>
+            <th class="text-center">Actions</th>
         </tr>
     </thead>
 
     <tbody>
-@foreach (var item in Model)
-{
-        <tr>
-            <td>@item.Name</td>
+        @if (Model == null || !Model.Any())
+        {
+            <tr>
+                <td colspan="6" class="text-center text-muted py-4">
+                    No URLs added yet. Click <b>Create New</b> to add one.
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="fw-semibold">@item.Name</td>
 
-            <td>
-                <a href="@item.Url" target="_blank">@item.Url</a>
-            </td>
+                    <td>@item.IntervalSeconds sec</td>
 
-            <td>@item.IntervalSeconds sec</td>
+                    <td>
+                        @if (item.HealthStatus == "Healthy")
+                        {
+                            <span class="badge bg-success">Healthy</span>
+                        }
+                        else if (item.HealthStatus == "Down")
+                        {
+                            <span class="badge bg-danger">Down</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Unknown</span>
+                        }
+                    </td>
 
-            <td>
-                @if (item.Health == "Healthy")
-                {
-                    <span class="badge bg-success">Healthy</span>
-                }
-                else if (item.Health == "Down")
-                {
-                    <span class="badge bg-danger">Down</span>
-                }
-                else
-                {
-                    <span class="badge bg-secondary">Unknown</span>
-                }
-            </td>
+                    <td>
+                        @if (item.HealthStatus == "Down" && item.DownSince != null)
+                        {
+                            var duration = DateTime.UtcNow - item.DownSince.Value;
+                            <span class="text-danger fw-bold">
+                                @($"{(int)duration.TotalMinutes}m {duration.Seconds}s")
+                            </span>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
 
-            <td>
-                @if (item.Health == "Down" && item.DownSince != null)
-                {
-                    var duration = DateTime.UtcNow - item.DownSince.Value;
-                    <span class="text-danger fw-bold">
-                        @($"{(int)duration.TotalMinutes}m {duration.Seconds}s")
-                    </span>
-                }
-                else
-                {
-                    <span>-</span>
-                }
-            </td>
+                    <td>
+                        @item.LastUpdated.ToLocalTime().ToString("dd MMM yyyy HH:mm:ss")
+                    </td>
 
-            <td>@item.LastUpdated</td>
+                    <!-- ✅ CLEAN ACTIONS -->
+                    <td class="text-center">
+                        <div class="btn-group">
+                            <a asp-action="Details"
+                               asp-route-id="@item.Id"
+                               class="btn btn-sm btn-outline-info">
+                                Details
+                            </a>
 
-            <td>
-                <a asp-action="Edit"
-                   asp-route-id="@item.Id"
-                   class="btn btn-sm btn-warning">
-                    Edit
-                </a>
+                            <a asp-action="Edit"
+                               asp-route-id="@item.Id"
+                               class="btn btn-sm btn-warning">
+                                Edit
+                            </a>
 
-                <a asp-action="Delete"
-                   asp-route-id="@item.Id"
-                   class="btn btn-sm btn-danger">
-                    Delete
-                </a>
-            </td>
-        </tr>
-}
+                            <a asp-action="Delete"
+                               asp-route-id="@item.Id"
+                               class="btn btn-sm btn-danger">
+                                Delete
+                            </a>
+
+                            <button type="button"
+                                    class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                            </button>
+
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                @if (item.HealthStatus == "Down"
+                                    && !string.IsNullOrEmpty(item.AppPoolName)
+                                    && !string.IsNullOrEmpty(item.RecoveryWebsiteUrl)
+                                    && item.RecoveryAction.HasValue)
+                                {
+                                    <li>
+                                        <form asp-action="Recover"
+                                              asp-route-id="@item.Id"
+                                              method="post">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit"
+                                                    class="dropdown-item text-primary">
+                                                Recover
+                                            </button>
+                                        </form>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li>
+                                        <span class="dropdown-item text-muted">
+                                            Recovery not available
+                                        </span>
+                                    </li>
+                                }
+
+                                <li><hr class="dropdown-divider" /></li>
+
+                                <li>
+                                    @if (!string.IsNullOrEmpty(item.LastRecoveryStatus))
+                                    {
+                                        <span class="dropdown-item small text-muted">
+                                            Status: @item.LastRecoveryStatus
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="dropdown-item small text-muted">
+                                            Status: —
+                                        </span>
+                                    }
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            }
+        }
     </tbody>
 </table>
 
 <script>
-    // Auto refresh every 10 seconds
     setInterval(function () {
         location.reload();
     }, 10000);
 </script>
-
-
-

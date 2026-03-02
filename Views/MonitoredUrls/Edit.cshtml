@@ -4,30 +4,86 @@
     ViewData["Title"] = "Edit URL";
 }
 
-<h2>Edit URL</h2>
+<h2>Edit Monitored URL</h2>
 
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="Id" />
 
     <div class="mb-3">
-        <label class="form-label">Name</label>
+        <label asp-for="Name" class="form-label"></label>
         <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">URL</label>
+        <label asp-for="Url" class="form-label"></label>
         <input asp-for="Url" class="form-control" />
+        <span asp-validation-for="Url" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Interval</label>
+        <label asp-for="IntervalSeconds" class="form-label">Interval</label>
         <select asp-for="IntervalSeconds" class="form-select">
             <option value="30">30 seconds</option>
-            <option value="40">40 seconds</option>
-            <option value="50">50 seconds</option>
+            <option value="60">1 minute</option>
+            <option value="300">5 minutes</option>
         </select>
     </div>
 
-    <button type="submit" class="btn btn-success">Update</button>
+    <hr />
+
+    <h4>Email Alerts</h4>
+
+    <div class="mb-3">
+        <label asp-for="AlertEmails" class="form-label">
+            Alert Emails (comma separated)
+        </label>
+        <input asp-for="AlertEmails"
+               class="form-control"
+               placeholder="ops@company.com, dev@company.com" />
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="SendDownAlert" class="form-check-input" />
+        <label asp-for="SendDownAlert" class="form-check-label">
+            Send email when URL goes DOWN
+        </label>
+    </div>
+
+    <hr />
+
+    <!-- ========================= -->
+    <!-- 🔁 RECOVERY CONFIG (NEW) -->
+    <!-- ========================= -->
+
+    <h4>Recovery Configuration</h4>
+
+    <div class="mb-3">
+        <label class="form-label fw-semibold">App Pool Name</label>
+        <input asp-for="AppPoolName" class="form-control"
+               placeholder="e.g. practice03" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Recovery Website URL</label>
+        <input asp-for="RecoveryWebsiteUrl" class="form-control"
+               placeholder="https://recovery-server/api/recover" />
+    </div>
+
+    <div class="mb-4">
+        <label class="form-label fw-semibold">Recovery Action</label>
+        <select asp-for="RecoveryAction" class="form-select">
+            <option value="">-- Select Action --</option>
+            <option value="1">Restart App Pool</option>
+            <option value="2">Restart Website</option>
+            <option value="3">Full Recovery</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

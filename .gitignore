@@ -1,10 +1,22 @@
-# Build artifacts
+# Build folders
 bin/
 obj/
+publish/
+*.zip
 
-# Database files
+# Database
 *.db
 *.sqlite
 
-# App settings with secrets
+# Mac
+.DS_Store
+
+# VS / Rider
+.vs/
+.idea/
+
+# User files
+*.user
+*.suo
+
 appsettings.Development.json

@@ -1,0 +1,108 @@
+@model List<UrlHealthMonitor.Models.UrlOutage>
+
+@{
+    // Read filters from query string
+    var urlFilter = Context.Request.Query["url"].ToString();
+    var status = Context.Request.Query["status"].ToString();
+
+    var filtered = Model.AsEnumerable();
+
+    // Filter by URL name
+    if (!string.IsNullOrWhiteSpace(urlFilter))
+    {
+        filtered = filtered.Where(o =>
+            o.MonitoredUrl != null &&
+            o.MonitoredUrl.Name != null &&
+            o.MonitoredUrl.Name.Contains(urlFilter, StringComparison.OrdinalIgnoreCase));
+    }
+
+    // Filter by status
+    if (status == "recovered")
+    {
+        filtered = filtered.Where(o => o.RecoveredAt.HasValue);
+    }
+    else if (status == "down")
+    {
+        filtered = filtered.Where(o => !o.RecoveredAt.HasValue);
+    }
+}
+
+<h2>Outage Reports</h2>
+
+<a class="btn btn-danger mb-3" href="/Reports/DownloadPdf">
+    Download PDF
+</a>
+
+<!-- 🔍 FILTERS -->
+<form method="get" class="row g-3 mb-4">
+
+    <div class="col-md-4">
+        <label class="form-label">URL Name</label>
+        <input type="text"
+               name="url"
+               class="form-control"
+               value="@urlFilter"
+               placeholder="Search URL name" />
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+            <option value="">All</option>
+            <option value="recovered" selected="@(status == "recovered")">Recovered</option>
+            <option value="down" selected="@(status == "down")">Still Down</option>
+        </select>
+    </div>
+
+    <div class="col-md-4 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">
+            Apply Filters
+        </button>
+    </div>
+
+</form>
+
+<!-- 📊 TABLE -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>URL Name</th>
+            <th>Down Started</th>
+            <th>Recovered At</th>
+            <th>Duration (mins)</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var o in filtered)
+        {
+            var duration = o.RecoveredAt.HasValue
+                ? (o.RecoveredAt.Value - o.DownStartedAt).TotalMinutes
+                : 0;
+
+            <tr>
+                <td>@o.MonitoredUrl?.Name</td>
+                <td>@o.DownStartedAt</td>
+                <td>@o.RecoveredAt</td>
+                <td>@Math.Round(duration, 2)</td>
+                <td>
+                    <a class="btn btn-sm btn-outline-primary"
+                       asp-controller="MonitoredUrls"
+                       asp-action="Details"
+                       asp-route-id="@o.MonitoredUrlId">
+                        Details
+                    </a>
+                </td>
+            </tr>
+        }
+
+        @if (!filtered.Any())
+        {
+            <tr>
+                <td colspan="5" class="text-center text-muted">
+                    No records match the selected filters.
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

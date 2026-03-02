@@ -1,8 +1,79 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container">
+
+    <!-- HERO -->
+    <div class="cormx-hero text-center">
+        <h1 class="cormx-title">CORMX</h1>
+
+        <p class="lead mt-3 cormx-subtitle fw-semibold">
+            Monitoring & Alerting Platform by Cormsquare
+        </p>
+
+        <p class="mt-4 cormx-subtitle">
+            CORMX continuously monitors critical URLs, detects outages in real time,
+            sends instant email alerts, and provides detailed health and outage reports
+            to ensure system reliability.
+        </p>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="row mt-5 g-4">
+
+        <div class="col-md-4">
+            <div class="cormx-card text-center">
+                <h5>Real-time Monitoring</h5>
+                <p>
+                    Continuously checks URL availability at configurable intervals.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="cormx-card text-center">
+                <h5>Instant Alerts</h5>
+                <p>
+                    Sends email notifications immediately when a monitored URL goes down.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="cormx-card text-center">
+                <h5>Reports & Insights</h5>
+                <p>
+                    View outage history, recovery times, and download detailed PDF reports.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="text-center mt-5">
+        <a asp-controller="Dashboard" asp-action="Index"
+           class="btn btn-cormx-primary me-3">
+            Dashboard
+        </a>
+
+        <a asp-controller="Reports" asp-action="Index"
+           class="btn btn-cormx-outline me-3">
+            Reports
+        </a>
+
+        <a asp-controller="MonitoredUrls" asp-action="Index"
+           class="btn btn-cormx-outline">
+            Manage URLs
+        </a>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="text-center mt-5 cormx-footer">
+        <p>
+            © 2026 — CORMX by Cormsquare
+        </p>
+    </div>
+
 </div>
