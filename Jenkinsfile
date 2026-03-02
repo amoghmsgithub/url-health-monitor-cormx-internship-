@@ -1,10 +1,19 @@
 pipeline {
     agent any
 
+    tools {
+        dotnetsdk 'dotnet8'
+    }
+
+    environment {
+        PATH = "${tool 'dotnet8'}:${env.PATH}"
+    }
+
     stages {
 
         stage('Restore') {
             steps {
+                sh 'dotnet --version'
                 sh 'dotnet restore UrlHealthMonitor.sln'
             }
         }
@@ -17,20 +26,8 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'dotnet test UrlHealthMonitor.sln --no-build --logger trx'
+                sh 'dotnet test UrlHealthMonitor.sln --no-build'
             }
-        }
-    }
-
-    post {
-        always {
-            junit '**/*.trx'
-        }
-        success {
-            echo 'Build succeeded ✅'
-        }
-        failure {
-            echo 'Build failed ❌'
         }
     }
 }
