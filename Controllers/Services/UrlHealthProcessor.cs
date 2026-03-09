@@ -42,6 +42,16 @@ namespace UrlHealthMonitor.Services
                     isHealthyNow = false;
                 }
 
+                // ✅ ADDED FIX: Update status when it is Unknown or changes
+                if (isHealthyNow)
+                {
+                    url.HealthStatus = "Healthy";
+                }
+                else
+                {
+                    url.HealthStatus = "Down";
+                }
+
                 if (url.HealthStatus == "Healthy" && !isHealthyNow)
                 {
                     url.HealthStatus = "Down";
