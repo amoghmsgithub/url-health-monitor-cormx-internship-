@@ -6,7 +6,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -23,3 +22,7 @@ jobs:
 
       - name: Build Project
         run: dotnet build UrlHealthMonitor.sln --configuration Release --no-restore
+
+      - name: Trigger Jenkins Tests
+        run: |
+          curl -X POST http://localhost:8080/job/UrlHealthMonitor-CI/build?token=jenkins-trigger
