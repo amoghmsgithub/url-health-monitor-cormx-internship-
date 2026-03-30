@@ -64,6 +64,10 @@ namespace UrlHealthMonitor.Controllers
             if (user.Role.Name == "Viewer")
                 return RedirectToAction("Index", "Home");
 
+            if (user.Role.Name == "SuperAdmin")
+                return RedirectToAction("Index", "Dashboard"); // same for now
+
+            // Admin
             return RedirectToAction("Index", "Dashboard");
         }
 
@@ -84,4 +88,3 @@ namespace UrlHealthMonitor.Controllers
         }
     }
 }
-

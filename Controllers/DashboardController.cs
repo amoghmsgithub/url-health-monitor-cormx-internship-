@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace UrlHealthMonitor.Controllers
 {
-    [Authorize(Roles = "Admin,User")]
+    [Authorize(Roles = "Admin,Viewer,SuperAdmin")]
     public class DashboardController : Controller
     {
         private readonly AppDbContext _context;

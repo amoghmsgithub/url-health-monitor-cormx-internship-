@@ -33,7 +33,7 @@
                         </a>
                     </li>
 
-                    <!-- DASHBOARD (ADMIN + USER + VIEWER) -->
+                    <!-- DASHBOARD (ALL LOGGED-IN USERS) -->
                     @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
                         <li class="nav-item">
@@ -43,8 +43,8 @@
                         </li>
                     }
 
-                    <!-- ADMIN ONLY -->
-                    @if (User.IsInRole("Admin"))
+                    <!-- ADMIN + SUPERADMIN -->
+                    @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
                     {
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="MonitoredUrls" asp-action="Index">
@@ -71,6 +71,16 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="UserManual">
                                 <i class="bi bi-book"></i> User Manual
+                            </a>
+                        </li>
+                    }
+
+                    <!-- ✅ NEW: USER MANAGEMENT (SUPERADMIN ONLY) -->
+                    @if (User.IsInRole("SuperAdmin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="User" asp-action="Index">
+                                <i class="bi bi-people"></i> User Management
                             </a>
                         </li>
                     }
@@ -149,7 +159,7 @@
 
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- DARK MODE SCRIPT (UNCHANGED) -->
+<!-- DARK MODE SCRIPT -->
 <script>
     const toggleBtn = document.getElementById("themeToggle");
     const icon = document.getElementById("themeIcon");

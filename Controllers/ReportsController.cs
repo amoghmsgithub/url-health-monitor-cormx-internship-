@@ -7,7 +7,7 @@ using UrlHealthMonitor.Services;
 namespace UrlHealthMonitor.Controllers
 {
     // 🔒 ADMIN ONLY ACCESS
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Viewer,SuperAdmin")]
     public class ReportsController : Controller
     {
         private readonly AppDbContext _context;

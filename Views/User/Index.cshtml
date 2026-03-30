@@ -1,0 +1,136 @@
+@model IEnumerable<UrlHealthMonitor.Models.AppUser>
+
+@{
+    ViewData["Title"] = "User Management";
+
+    var admins = Model?.Where(u => u.Role?.Name == "Admin").ToList();
+    var users = Model?.Where(u => u.Role?.Name == "User").ToList();
+    var viewers = Model?.Where(u => u.Role?.Name == "Viewer").ToList();
+    var superAdmins = Model?.Where(u => u.Role?.Name == "SuperAdmin").ToList();
+}
+
+<h2 class="mb-4">User Management</h2>
+
+<div class="d-flex justify-content-end mb-4">
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Create User
+    </a>
+</div>
+
+<div class="row">
+
+    <!-- 🔵 ADMINS -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header text-dark fw-semibold" style="background-color:#eef2f7;">
+                Admins
+            </div>
+            <div class="card-body p-2">
+                @if (admins != null && admins.Any())
+                {
+                    foreach (var user in admins)
+                    {
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-2 px-2">
+                            <span>@user.Email</span>
+                            <div>
+                                <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-warning">Edit</a>
+                                <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-outline-info">Details</a>
+                                <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center text-muted py-2">No Admins</div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔷 USERS -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header text-dark fw-semibold" style="background-color:#e8f1ff;">
+                Users
+            </div>
+            <div class="card-body p-2">
+                @if (users != null && users.Any())
+                {
+                    foreach (var user in users)
+                    {
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-2 px-2">
+                            <span>@user.Email</span>
+                            <div>
+                                <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-warning">Edit</a>
+                                <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-outline-info">Details</a>
+                                <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center text-muted py-2">No Users</div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- ⚪ VIEWERS -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header text-dark fw-semibold" style="background-color:#f4f6f8;">
+                Viewers
+            </div>
+            <div class="card-body p-2">
+                @if (viewers != null && viewers.Any())
+                {
+                    foreach (var user in viewers)
+                    {
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-2 px-2">
+                            <span>@user.Email</span>
+                            <div>
+                                <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-warning">Edit</a>
+                                <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-outline-info">Details</a>
+                                <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center text-muted py-2">No Viewers</div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔴 SUPER ADMINS -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header text-dark fw-semibold" style="background-color:#fdecec;">
+                Super Admins
+            </div>
+            <div class="card-body p-2">
+                @if (superAdmins != null && superAdmins.Any())
+                {
+                    foreach (var user in superAdmins)
+                    {
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-2 px-2">
+                            <span class="fw-semibold">@user.Email</span>
+                            <div>
+                                <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary">Details</a>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center text-muted py-2">No Super Admins</div>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>

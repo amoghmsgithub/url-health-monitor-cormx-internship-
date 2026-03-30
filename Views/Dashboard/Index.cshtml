@@ -10,84 +10,98 @@
     var pieData = new[] { up, down };
     var barData = new[] { total, up, down };
 
-    // 🔹 TEMP per-URL timeline data (UI ONLY)
     var timeLabels = new[] { "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00" };
 
     var timelineSeries = new[]
     {
-        new { label = "google", data = new[] {1.2, 1.3, 1.1, 1.2, 1.3, 1.2, 1.3}, color = "#2563eb" },
-        new { label = "test",   data = new[] {1.0, 1.1, 1.0, 1.1, 1.0, 1.1, 1.0}, color = "#16a34a" },
-        new { label = "gpt",    data = new[] {2.0, 2.2, 2.5, 2.1, 2.3, 2.4, 2.2}, color = "#dc2626" }
+        new { label = "google", data = new[] {1.2, 1.3, 1.1, 1.2, 1.3, 1.2, 1.3}, color = "#4f46e5" },
+        new { label = "test",   data = new[] {1.0, 1.1, 1.0, 1.1, 1.0, 1.1, 1.0}, color = "#22c55e" },
+        new { label = "gpt",    data = new[] {2.0, 2.2, 2.5, 2.1, 2.3, 2.4, 2.2}, color = "#ef4444" }
     };
 }
 
 <div class="container dashboard-page">
 
     <!-- HEADER -->
-    <div class="mb-4">
-        <h2 class="dashboard-title">Account Overview</h2>
-        <p class="text-muted">System health summary (last check)</p>
-    </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-semibold mb-0">Dashboard</h2>
+            <small class="text-muted">System health overview</small>
+        </div>
 
-    <!-- KPI CARDS -->
-    <div class="row g-4 mb-5">
-        <div class="col-md-4">
-            <div class="stat-card stat-total">
-                <div class="stat-label">Total URLs</div>
-                <div class="stat-value">@total</div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="stat-card stat-up">
-                <div class="stat-label">UP</div>
-                <div class="stat-value">@up</div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="stat-card stat-down">
-                <div class="stat-label">DOWN</div>
-                <div class="stat-value">@down</div>
-            </div>
+        <div>
+            @if (down > 0)
+            {
+                <span class="badge bg-danger px-3 py-2">Critical</span>
+            }
+            else
+            {
+                <span class="badge bg-success px-3 py-2">Healthy</span>
+            }
         </div>
     </div>
 
-    <!-- ACTIVE INCIDENT -->
+    <!-- ALERT -->
     @if (down > 0)
     {
-        <div class="alert alert-danger mb-4">
-            <strong>⚠ Active Incident Detected</strong><br />
-            One or more monitored URLs are currently DOWN.
+        <div class="alert border-0 shadow-sm mb-4" style="background:#fef2f2; color:#991b1b;">
+            ⚠ Some URLs are currently DOWN
         </div>
     }
 
-    <!-- CHARTS ROW -->
-    <div class="row g-4">
+    <!-- KPI CARDS -->
+    <div class="row g-4 mb-4">
 
-        <!-- LEFT -->
-        <div class="col-md-6">
-            <div class="chart-card">
-                <div class="chart-title">Status Distribution</div>
-                <canvas id="pieChart"></canvas>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 p-4 text-center">
+                <div class="text-muted small">Total URLs</div>
+                <h2 class="fw-bold">@total</h2>
             </div>
         </div>
 
-        <!-- RIGHT -->
-        <div class="col-md-6">
-
-            <!-- OVERVIEW -->
-            <div class="chart-card mb-3">
-                <div class="chart-title">Overview</div>
-                <canvas id="barChart"></canvas>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 p-4 text-center">
+                <div class="text-muted small">UP</div>
+                <h2 class="fw-bold" style="color:#22c55e;">@up</h2>
             </div>
+        </div>
 
-            <!-- 🔥 MINI TIMELINE (FIXED SIZE) -->
-            <div class="chart-card">
-                <div class="chart-title">Response Time (per URL)</div>
-                <div style="height:180px;">
-                    <canvas id="timelineChart"></canvas>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 p-4 text-center">
+                <div class="text-muted small">DOWN</div>
+                <h2 class="fw-bold" style="color:#ef4444;">@down</h2>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 🔥 MAIN GRAPH (NOW HERO SECTION) -->
+    <div class="card shadow-sm border-0 p-4 mb-4">
+        <h5 class="fw-semibold mb-3">Response Time Trend</h5>
+        <div style="height:260px;">
+            <canvas id="timelineChart"></canvas>
+        </div>
+    </div>
+
+    <!-- SECONDARY CHARTS -->
+    <div class="row g-4">
+
+        <!-- PIE (SMALLER NOW) -->
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0 p-3">
+                <div class="fw-semibold mb-2">Status</div>
+                <div style="height:220px;">
+                    <canvas id="pieChart"></canvas>
                 </div>
             </div>
+        </div>
 
+        <!-- BAR -->
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0 p-3">
+                <div class="fw-semibold mb-2">Overview</div>
+                <canvas id="barChart"></canvas>
+            </div>
         </div>
 
     </div>
@@ -98,6 +112,12 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    const colors = {
+        primary: "#4f46e5",
+        success: "#22c55e",
+        danger: "#ef4444"
+    };
+
     // PIE
     new Chart(document.getElementById('pieChart'), {
         type: 'pie',
@@ -105,7 +125,7 @@
             labels: ['UP', 'DOWN'],
             datasets: [{
                 data: @Html.Raw(JsonSerializer.Serialize(pieData)),
-                backgroundColor: ['#16a34a', '#dc2626']
+                backgroundColor: [colors.success, colors.danger]
             }]
         },
         options: {
@@ -120,17 +140,16 @@
             labels: ['Total', 'UP', 'DOWN'],
             datasets: [{
                 data: @Html.Raw(JsonSerializer.Serialize(barData)),
-                backgroundColor: ['#2563eb', '#16a34a', '#dc2626']
+                backgroundColor: [colors.primary, colors.success, colors.danger]
             }]
         },
         options: {
-            responsive: true,
             plugins: { legend: { display: false } },
             scales: { y: { beginAtZero: true } }
         }
     });
 
-    // 🔥 MINI MULTI-LINE TIMELINE
+    // LINE
     new Chart(document.getElementById('timelineChart'), {
         type: 'line',
         data: {
